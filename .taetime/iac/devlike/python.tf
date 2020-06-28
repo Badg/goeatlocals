@@ -8,5 +8,5 @@ module "taetime_dev-base_python" {
     container_name = "python"
     project_data_volume = local.project_data_volume
     container_network = local.container_network
-    python_module_entrypoint = "__hello__"
+    python_module_entrypoint = "goeatlocals.app"
 }
