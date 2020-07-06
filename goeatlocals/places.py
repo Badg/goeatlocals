@@ -97,3 +97,6 @@ PLACES = [
         }
     }
 ]
+
+
+PLACES_FROM_ID = {place['placeID']: place for place in PLACES}
