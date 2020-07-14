@@ -11,10 +11,10 @@ PLACES = [
         'placePrimaryType': 'liquor',
         'placeDetails': {
             'osmID': 3056134586,
-            'hasFood': False,
-            'hasBooze': True,
-            'hasBeer': True,
-            'hasProvisions': False
+            'hasFood': 0.0,
+            'hasBooze': 5.0,
+            'hasBeer': 3.0,
+            'hasProvisions': 0.0
         }
     },
     {
@@ -25,9 +25,9 @@ PLACES = [
         'placePrimaryType': 'liquor',
         'placeDetails': {
             'osmID': 1079401457,
-            'hasFood': False,
-            'hasBooze': True,
-            'hasBeer': True,
+            'hasFood': 0.0,
+            'hasBooze': 4.0,
+            'hasBeer': 3.0,
             'hasProvisions': False
         }
     },
@@ -39,10 +39,10 @@ PLACES = [
         'placePrimaryType': 'restaurant',
         'placeDetails': {
             'osmID': 4095991379,
-            'hasFood': True,
-            'hasBooze': False,
-            'hasBeer': True,
-            'hasProvisions': False
+            'hasFood': 5.0,
+            'hasBooze': 0.0,
+            'hasBeer': 2.0,
+            'hasProvisions': 0.0
         }
     },
     {
@@ -53,10 +53,10 @@ PLACES = [
         'placePrimaryType': 'beerwine',
         'placeDetails': {
             'osmID': 3470332401,
-            'hasFood': True,
-            'hasBooze': True,
-            'hasBeer': True,
-            'hasProvisions': False
+            'hasFood': 4.0,
+            'hasBooze': 1.0,
+            'hasBeer': 4.0,
+            'hasProvisions': 0.0
         }
     },
     {
@@ -67,10 +67,10 @@ PLACES = [
         'placePrimaryType': 'restaurant',
         'placeDetails': {
             'osmID': 3470332399,
-            'hasFood': True,
-            'hasBooze': True,
-            'hasBeer': True,
-            'hasProvisions': False
+            'hasFood': 5.0,
+            'hasBooze': 3.0,
+            'hasBeer': 3.0,
+            'hasProvisions': 0.0
         }
     },
     {
@@ -81,12 +81,10 @@ PLACES = [
         'placePrimaryType': 'restaurant',
         'placeDetails': {
             'osmID': 1186413873,
-            'hasFood': True,
-            'hasBooze': False,
-            # Note I don't actually know this for sure; I've never been
-            # there
-            'hasBeer': False,
-            'hasProvisions': False
+            'hasFood': 4.0,
+            'hasBooze': None,
+            'hasBeer': None,
+            'hasProvisions': 0.0
         }
     },
     {
@@ -97,10 +95,10 @@ PLACES = [
         'placePrimaryType': 'grocery',
         'placeDetails': {
             'osmID': 3927998690,
-            'hasFood': True,
-            'hasBooze': False,
-            'hasBeer': True,
-            'hasProvisions': True
+            'hasFood': 0.0,
+            'hasBooze': 0.0,
+            'hasBeer': 1.0,
+            'hasProvisions': 3.0
         }
     }
 ]
