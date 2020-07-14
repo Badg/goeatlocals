@@ -1,5 +1,7 @@
 import functools
+import json
 
+import asks
 import trio
 from hypercorn.config import Config
 from hypercorn.trio import serve
@@ -9,6 +11,8 @@ from quart_trio import QuartTrio
 
 from goeatlocals.places import PLACES
 from goeatlocals.places import PLACES_FROM_ID
+from goeatlocals.mapstyles import MAPSTYLES
+from goeatlocals.mapstyles import FONTS_STATIC_PATH
 
 app = QuartTrio(__name__)
 
@@ -35,6 +39,29 @@ async def get_place_details(place_id):
                 "We don't have a record of that place. " +
                 'Is it in another castle?'
         }), 404
+
+
+@app.route('/api/maps/styles/<style_id>.json')
+async def get_mapstyle(style_id):
+    if style_id not in MAPSTYLES:
+        return abort(404)
+    else:
+        json_txt = await MAPSTYLES[style_id].render()
+        # this is janky as all fuck but it's faster than looking up how to set
+        # the right content type because quart docs are kinda lame
+        return jsonify(json.loads(json_txt))
+
+
+@app.route('/api/maps/fonts/<fontstack>/<fontrange>.pbf')
+async def get_mapstyle_fontstack(fontstack, fontrange):
+    # TODO EXTREMELY IMPORTANT: this is unsanitized input being put on the
+    # filesystem. This is extremely unsafe! THIS IS AN ATTACK VECTOR!
+    # DO NOT SHIP THIS TO PROD!
+    fontstack_path = FONTS_STATIC_PATH / fontstack / f'{fontrange}.pbf'
+    if await fontstack_path.exists():
+        return await fontstack_path.read_bytes()
+    else:
+        abort(404)
 
 
 def run_app():
