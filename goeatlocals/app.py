@@ -13,6 +13,7 @@ from goeatlocals.places import PLACES
 from goeatlocals.places import PLACES_FROM_ID
 from goeatlocals.mapstyles import MAPSTYLES
 from goeatlocals.mapstyles import FONTS_STATIC_PATH
+from goeatlocals.mapstyles import TILES_STATIC_PATH
 
 app = QuartTrio(__name__)
 
@@ -50,6 +51,13 @@ async def get_mapstyle(style_id):
         # this is janky as all fuck but it's faster than looking up how to set
         # the right content type because quart docs are kinda lame
         return jsonify(json.loads(json_txt))
+
+
+@app.route('/api/maps/tiles.json')
+async def get_tiles_def():
+    # this is janky as all fuck but it's faster than looking up how to set
+    # the right content type because quart docs are kinda lame
+    return jsonify(json.loads(await TILES_STATIC_PATH.read_text()))
 
 
 @app.route('/api/maps/fonts/<fontstack>/<fontrange>.pbf')

@@ -6,6 +6,7 @@ import trio
 _data_path = trio.Path(__file__).parent / 'data'
 _template_path = _data_path / 'map_style_template.json'
 FONTS_STATIC_PATH = _data_path / 'fonts'
+TILES_STATIC_PATH = _data_path / 'tiles.json'
 
 
 @dataclasses.dataclass

@@ -8,7 +8,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "/maps/tiles.json"
+      "url": "/api/maps/tiles.json"
     }
   },
   "glyphs": "/api/maps/fonts/{fontstack}/{range}.pbf",
