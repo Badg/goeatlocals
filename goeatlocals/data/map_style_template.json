@@ -103,8 +103,7 @@
       "filter": ["all", ["in", "class", "sand"]],
       "paint": {
         "fill-antialias": false,
-        "fill-color": "__sand_color__",
-        "fill-opacity": 0.3
+        "fill-color": "__sand_color__"
       }
     },
     {

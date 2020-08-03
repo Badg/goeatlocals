@@ -3,14 +3,16 @@ import json
 
 import asks
 import trio
+import trio_asyncio
 from hypercorn.config import Config
 from hypercorn.trio import serve
 from quart import abort
 from quart import jsonify
+from quart import request
 from quart_trio import QuartTrio
 
-from goeatlocals.places import PLACES
-from goeatlocals.places import PLACES_FROM_ID
+from goeatlocals.places import get_place
+from goeatlocals.places import get_places_bbox
 from goeatlocals.mapstyles import MAPSTYLES
 from goeatlocals.mapstyles import FONTS_STATIC_PATH
 from goeatlocals.mapstyles import TILES_STATIC_PATH
@@ -25,21 +27,36 @@ async def index():
 
 @app.route('/api/places')
 async def get_all_places():
-    return jsonify(PLACES)
+    bbox = {
+        'top': request.args.get('north'),
+        'right': request.args.get('east'),
+        'bottom': request.args.get('south'),
+        'left': request.args.get('west')
+    }
+
+    if any((bbox_value is None for bbox_value in bbox.values())):
+        return jsonify({
+            'clientStatusHint': 400,
+            'clientErrorMessage':
+                'Need a proper bounding box!'
+        }), 400
+
+    bbox = {key: float(value) for key, value in bbox.items()}
+    return jsonify(await get_places_bbox(**bbox))
 
 
 @app.route('/api/places/<place_id>')
 async def get_place_details(place_id):
-    place_id = int(place_id)
-    if place_id in PLACES_FROM_ID:
-        return jsonify(PLACES_FROM_ID[place_id])
-    else:
+    place = await get_place(place_id)
+    if place is None:
         return jsonify({
             'clientStatusHint': 404,
             'clientErrorMessage':
                 "We don't have a record of that place. " +
                 'Is it in another castle?'
         }), 404
+    else:
+        return jsonify(place)
 
 
 @app.route('/api/maps/styles/<style_id>.json')
@@ -75,7 +92,7 @@ async def get_mapstyle_fontstack(fontstack, fontrange):
 def run_app():
     config = Config()
     config.bind = ['0.0.0.0:8000']
-    trio.run(functools.partial(serve, app, config))
+    trio_asyncio.run(functools.partial(serve, app, config))
 
 
 if __name__ == '__main__':
