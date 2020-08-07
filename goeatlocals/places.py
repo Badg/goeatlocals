@@ -43,7 +43,7 @@ def _convert_record_to_api(record):
         'placeID': base64.urlsafe_b64encode(record['place_id'].bytes).decode(),
         'placeLong': geojson['coordinates'][0],
         'placeLat': geojson['coordinates'][1],
-        'placePrimaryType': None,
+        'placePrimaryType': record.get('identity_display_class'),
         'placeDetails': {
             'hasFood': None,
             'hasBooze': None,
@@ -62,6 +62,7 @@ async def _get_place_record(place_id):
                 SELECT
                     place_id,
                     identity_name,
+                    identity_display_class,
                     ST_AsGeoJSON(ST_Transform(locator_point, 4326))
                         AS locator_point_json,
                     locator_address
@@ -87,6 +88,7 @@ async def _get_place_records(top, right, bottom, left):
                 SELECT
                     place_id,
                     identity_name,
+                    identity_display_class,
                     ST_AsGeoJSON(ST_Transform(locator_point, 4326))
                         AS locator_point_json,
                     locator_address

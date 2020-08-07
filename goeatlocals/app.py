@@ -11,6 +11,8 @@ from quart import jsonify
 from quart import request
 from quart_trio import QuartTrio
 
+from goeatlocals.cities import CITIES
+from goeatlocals.cities import CITY_CACHES
 from goeatlocals.places import get_place
 from goeatlocals.places import get_places_bbox
 from goeatlocals.mapstyles import MAPSTYLES
@@ -27,6 +29,8 @@ async def index():
 
 @app.route('/api/places')
 async def get_all_places():
+
+    city = request.args.get('city')
     bbox = {
         'top': request.args.get('north'),
         'right': request.args.get('east'),
@@ -34,11 +38,27 @@ async def get_all_places():
         'left': request.args.get('west')
     }
 
-    if any((bbox_value is None for bbox_value in bbox.values())):
+    if city is not None:
+        city = city.lower()
+        if city not in CITIES:
+            return jsonify({
+                'clientStatusHint': 404,
+                'clientErrorMessage':
+                    'Unknown city!'
+            }), 404
+        elif city in CITY_CACHES:
+            return jsonify(CITY_CACHES[city])
+        else:
+            bbox = CITIES[city]
+            response = await get_places_bbox(**bbox)
+            CITY_CACHES[city] = response
+            return jsonify(response)
+
+    elif any((bbox_value is None for bbox_value in bbox.values())):
         return jsonify({
             'clientStatusHint': 400,
             'clientErrorMessage':
-                'Need a proper bounding box!'
+                'Need a city or a proper bounding box!'
         }), 400
 
     bbox = {key: float(value) for key, value in bbox.items()}
