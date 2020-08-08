@@ -1,11 +1,11 @@
 '''Temporarily hard-code places just so we can get things going on the
 frontend.
 '''
-import base64
 import json
 import uuid
 
 import asyncpg
+import base58
 from trio_asyncio import aio_as_trio
 
 
@@ -29,7 +29,7 @@ async def get_places_bbox(top, right, bottom, left):
 
 
 async def get_place(place_id):
-    place_uuid = uuid.UUID(bytes=base64.urlsafe_b64decode(place_id.encode()))
+    place_uuid = uuid.UUID(bytes=base58.b58decode(place_id.encode()))
     place_from_db = await _get_place_record(place_uuid)
 
     if place_from_db is not None:
@@ -40,7 +40,7 @@ def _convert_record_to_api(record):
     geojson = json.loads(record['locator_point_json'])
     return {
         'name': record['identity_name'],
-        'placeID': base64.urlsafe_b64encode(record['place_id'].bytes).decode(),
+        'placeID': base58.b58encode(record['place_id'].bytes).decode(),
         'placeLong': geojson['coordinates'][0],
         'placeLat': geojson['coordinates'][1],
         'placePrimaryType': record.get('identity_display_class'),
