@@ -41,15 +41,41 @@ def _convert_record_to_api(record):
     return {
         'name': record['identity_name'],
         'placeID': base58.b58encode(record['place_id'].bytes).decode(),
-        'placeLong': geojson['coordinates'][0],
-        'placeLat': geojson['coordinates'][1],
-        'placePrimaryType': record.get('identity_display_class'),
-        'placeDetails': {
-            'hasFood': None,
-            'hasBooze': None,
-            'hasBeer': None,
-            'hasProvisions': None
+        'status': record['status'],
+        'info': {
+            'identity': {
+                'displayClass': record.get('identity_display_class'),
+            },
+            'locators': {
+                'lat': geojson['coordinates'][1],
+                'lon': geojson['coordinates'][0],
+                'address': _extract_address(record),
+                'phone': record.get('locator_phone'),
+                'website': record.get('locator_website'),
+            },
+            'inventory': {
+                'preparedFood': None,
+                'fullAlcohol': None,
+                'lightAlcohol': None,
+                'grocery': None,
+            },
         }
+    }
+
+
+def _extract_address(record):
+    # Note that the address record might be present but None, so this way we
+    # handle both that and a missing record
+    address_record = record.get('locator_address') or {}
+    return {
+        'streetNumber': address_record.get('street_number'),
+        'streetName': address_record.get('street_name'),
+        'unitNumber': address_record.get('unit_number'),
+        'neighborhood': address_record.get('neighborhood'),
+        'city': address_record.get('city'),
+        'state': address_record.get('state'),
+        'country': address_record.get('country'),
+        'postalCode': address_record.get('postal_code'),
     }
 
 
@@ -63,6 +89,9 @@ async def _get_place_record(place_id):
                     place_id,
                     identity_name,
                     identity_display_class,
+                    status,
+                    locator_website,
+                    locator_phone,
                     ST_AsGeoJSON(ST_Transform(locator_point, 4326))
                         AS locator_point_json,
                     locator_address
@@ -89,6 +118,9 @@ async def _get_place_records(top, right, bottom, left):
                     place_id,
                     identity_name,
                     identity_display_class,
+                    status,
+                    locator_website,
+                    locator_phone,
                     ST_AsGeoJSON(ST_Transform(locator_point, 4326))
                         AS locator_point_json,
                     locator_address
@@ -98,7 +130,8 @@ async def _get_place_records(top, right, bottom, left):
                         ST_MakeEnvelope($1, $2, $3, $4, 4326),
                         3857
                     ),
-                    placedata.locator_point);
+                    placedata.locator_point)
+                ORDER BY identity_name;
                 ''', left, bottom, right, top)
 
             return [dict(record) for record in records]

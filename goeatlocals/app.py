@@ -27,6 +27,15 @@ async def index():
     return b'Hello. World?'
 
 
+@app.route('/api/places/cities')
+async def get_all_cities():
+    '''Returns a list of all cities for which we have place views. Right
+    now this is really just a list of which cities we have bounding
+    boxes for.
+    '''
+    return jsonify(list(CITIES))
+
+
 @app.route('/api/places')
 async def get_all_places():
 
